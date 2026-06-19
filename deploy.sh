@@ -11,11 +11,7 @@ APP_NAME="finanzas"
 
 echo "🚀 Iniciando despliegue de Finanzas Personales..."
 
-# 1. Build local
-echo "📦 Construyendo app..."
-npm run build
-
-# 2. Sync archivos al servidor (excluye node_modules y .next)
+# 1. Sync archivos al servidor (el build se hace en el servidor)
 echo "📤 Enviando archivos al servidor..."
 rsync -avz --delete \
   --exclude='.next' \
@@ -24,8 +20,8 @@ rsync -avz --delete \
   --exclude='.env.local' \
   ./ "$SERVER:$REMOTE_DIR/"
 
-# 3. Setup en el servidor
-echo "⚙️  Configurando servidor..."
+# 2. Setup y build en el servidor
+echo "⚙️  Configurando y construyendo en el servidor..."
 ssh "$SERVER" << 'REMOTE'
   set -e
   cd ~/finanzas-app
@@ -52,14 +48,18 @@ ssh "$SERVER" << 'REMOTE'
     echo "⚠️  Verifica el archivo .env: nano .env"
   fi
 
-  # Instalar dependencias
-  npm install --production
+  # Instalar TODAS las dependencias (necesario para el build)
+  npm install
 
   # Generar Prisma Client
   npx prisma generate
 
   # Aplicar migraciones/schema
   npx prisma db push
+
+  # Build de la app
+  echo "📦 Construyendo app..."
+  npm run build
 
   # Seed (solo la primera vez)
   if [ ! -f .seeded ]; then

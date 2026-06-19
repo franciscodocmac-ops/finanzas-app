@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { amount, description, date, type, categoryId } = await req.json();
+  const { amount, description, date, type, categoryId, receiptItems } = await req.json();
 
   if (!amount || !description || !date || !type || !categoryId)
     return NextResponse.json({ error: "Todos los campos son requeridos" }, { status: 400 });

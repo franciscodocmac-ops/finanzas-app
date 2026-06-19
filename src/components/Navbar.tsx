@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/dashboard", label: "Resumen" },
   { href: "/dashboard/transactions", label: "Movimientos" },
   { href: "/dashboard/categories", label: "Categorías" },
+  { href: "/dashboard/scan-receipt", label: "📷 Boleta" },
 ];
 
 function ThemeToggle() {

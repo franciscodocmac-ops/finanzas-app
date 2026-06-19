@@ -79,9 +79,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
-          Demo: demo@finanzas.cl / demo1234
-        </p>
       </div>
     </div>
   );
