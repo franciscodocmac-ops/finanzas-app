@@ -29,6 +29,7 @@ export default function ScanReceiptPage() {
 
   const [step, setStep] = useState<Step>("upload");
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
 
@@ -53,16 +54,17 @@ export default function ScanReceiptPage() {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
     setError("");
   }
 
   async function handleScan() {
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) {
+    if (!selectedFile) {
       setError("Selecciona una imagen primero");
       return;
     }
+    const file = selectedFile;
     setScanning(true);
     setError("");
 
