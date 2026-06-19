@@ -3,6 +3,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export async function GET(_req: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  const tx = await prisma.transaction.findFirst({
+    where: { id: params.id, userId: session.user.id },
+    include: { category: true },
+  });
+  if (!tx) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  return NextResponse.json({ ...tx, receiptItems: tx.receiptItems ? JSON.parse(tx.receiptItems) : null });
+}
+
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -33,5 +46,5 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     include: { category: true },
   });
 
-  return NextResponse.json(updated);
+  return NextResponse.json({ ...updated, receiptItems: updated.receiptItems ? JSON.parse(updated.receiptItems) : null });
 }

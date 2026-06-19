@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -18,15 +18,10 @@ model User {
   categories   Category[]
 }
 
-enum TransactionType {
-  INCOME
-  EXPENSE
-}
-
 model Category {
   id           String          @id @default(cuid())
   name         String
-  type         TransactionType
+  type         String
   color        String          @default("#6366f1")
   icon         String          @default("💰")
   userId       String
@@ -39,13 +34,13 @@ model Category {
 
 model Transaction {
   id          String          @id @default(cuid())
-  amount      Decimal         @db.Decimal(10, 2)
+  amount      Float
   description String
   date        DateTime
-  type        TransactionType
+  type        String
   categoryId  String
   userId       String
-  receiptItems Json?
+  receiptItems String?
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   category     Category        @relation(fields: [categoryId], references: [id])

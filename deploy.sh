@@ -48,6 +48,12 @@ ssh "$SERVER" << 'REMOTE'
     echo "⚠️  Verifica el archivo .env: nano .env"
   fi
 
+  # Migrar DATABASE_URL a SQLite si todavía apunta a PostgreSQL
+  if grep -q "postgresql://" .env; then
+    sed -i 's|DATABASE_URL=.*|DATABASE_URL="file:./dev.db"|' .env
+    echo "✅ DATABASE_URL migrado a SQLite"
+  fi
+
   # Instalar TODAS las dependencias (necesario para el build)
   npm install
 
@@ -66,7 +72,8 @@ ssh "$SERVER" << 'REMOTE'
     npm run db:seed && touch .seeded
   fi
 
-  # Reiniciar/iniciar con PM2
+  # Reiniciar/iniciar con PM2 cargando variables del .env
+  export $(cat /root/finanzas-app/.env | xargs)
   pm2 delete finanzas 2>/dev/null || true
   pm2 start npm --name "finanzas" -- start
   pm2 save

@@ -28,14 +28,14 @@ export async function GET(req: Request) {
     // Últimos 6 meses
     prisma.$queryRaw<{ month: string; income: number; expense: number }[]>`
       SELECT
-        TO_CHAR(date, 'YYYY-MM') as month,
+        strftime('%Y-%m', date) as month,
         SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as income,
         SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as expense
       FROM "Transaction"
       WHERE "userId" = ${userId}
-        AND date >= ${new Date(year, month - 7, 1)}
-        AND date < ${end}
-      GROUP BY TO_CHAR(date, 'YYYY-MM')
+        AND date >= ${new Date(year, month - 7, 1).toISOString()}
+        AND date < ${end.toISOString()}
+      GROUP BY strftime('%Y-%m', date)
       ORDER BY month ASC
     `,
   ]);

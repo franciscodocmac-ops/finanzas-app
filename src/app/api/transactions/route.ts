@@ -32,7 +32,12 @@ export async function GET(req: Request) {
     take: 100,
   });
 
-  return NextResponse.json(transactions);
+  return NextResponse.json(
+    transactions.map((tx) => ({
+      ...tx,
+      receiptItems: tx.receiptItems ? JSON.parse(tx.receiptItems) : null,
+    }))
+  );
 }
 
 export async function POST(req: Request) {
@@ -57,9 +62,13 @@ export async function POST(req: Request) {
       type,
       categoryId,
       userId: session.user.id,
+      ...(receiptItems ? { receiptItems: JSON.stringify(receiptItems) } : {}),
     },
     include: { category: true },
   });
 
-  return NextResponse.json(transaction, { status: 201 });
+  return NextResponse.json(
+    { ...transaction, receiptItems: transaction.receiptItems ? JSON.parse(transaction.receiptItems) : null },
+    { status: 201 }
+  );
 }

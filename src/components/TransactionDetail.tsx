@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 
 interface ReceiptItem {
   name: string;
@@ -29,9 +30,20 @@ function fmtDate(d: string) {
 }
 
 export function TransactionDetail({ transaction: tx, onClose }: Props) {
-  if (!tx) return null;
+  const [items, setItems] = useState<ReceiptItem[]>([]);
+  const [loadingItems, setLoadingItems] = useState(false);
 
-  const items: ReceiptItem[] = Array.isArray(tx.receiptItems) ? tx.receiptItems : [];
+  useEffect(() => {
+    if (!tx) { setItems([]); return; }
+    setLoadingItems(true);
+    fetch(`/api/transactions/${tx.id}`)
+      .then((r) => r.json())
+      .then((data) => setItems(Array.isArray(data.receiptItems) ? data.receiptItems : []))
+      .catch(() => setItems([]))
+      .finally(() => setLoadingItems(false));
+  }, [tx?.id]);
+
+  if (!tx) return null;
 
   return (
     <div
@@ -72,7 +84,9 @@ export function TransactionDetail({ transaction: tx, onClose }: Props) {
         </div>
 
         {/* Items */}
-        {items.length > 0 ? (
+        {loadingItems ? (
+          <div className="px-5 py-4 text-sm text-slate-400 dark:text-slate-500">Cargando ítems…</div>
+        ) : items.length > 0 ? (
           <div className="px-5 py-4 max-h-72 overflow-y-auto">
             <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-3">
               Detalle de ítems

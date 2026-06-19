@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY no configurada en el servidor" }, { status: 500 });
   }
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, defaultHeaders: { "Accept-Encoding": "identity" } });
 
   let file: File | null = null;
   try {
@@ -29,12 +29,17 @@ export async function POST(req: Request) {
 
   const rawBuffer = Buffer.from(await file.arrayBuffer());
 
-  // Redimensiona a máx 1000px y comprime para reducir payload y evitar timeouts
-  const isJpegOrWebp = /image\/(jpeg|webp)/.test(file.type);
-  const processedBuffer = await sharp(rawBuffer)
-    .resize(1000, 1000, { fit: "inside", withoutEnlargement: true })
-    .jpeg({ quality: isJpegOrWebp ? 70 : 85 })
-    .toBuffer();
+  // Comprime solo si supera 1MB para reducir payload y evitar timeouts
+  let processedBuffer: Buffer;
+  if (rawBuffer.byteLength > 1_000_000) {
+    const isJpegOrWebp = /image\/(jpeg|webp)/.test(file.type);
+    processedBuffer = await sharp(rawBuffer)
+      .resize(1000, 1000, { fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: isJpegOrWebp ? 70 : 85 })
+      .toBuffer();
+  } else {
+    processedBuffer = rawBuffer;
+  }
 
   const base64 = processedBuffer.toString("base64");
 
@@ -62,7 +67,7 @@ Si no puedes leer algún precio con certeza, omite ese ítem.`,
         },
       ],
     },
-    { signal: AbortSignal.timeout(55000) }
+    { signal: AbortSignal.timeout(60000) }
   );
 
   const raw = message.content[0].type === "text" ? message.content[0].text.trim() : "";

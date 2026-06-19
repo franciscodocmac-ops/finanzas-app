@@ -2,21 +2,19 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
-import { TransactionType } from "@prisma/client";
-
 const defaultCategories = [
-  { name: "Sueldo", type: TransactionType.INCOME, color: "#10b981", icon: "💼" },
-  { name: "Freelance", type: TransactionType.INCOME, color: "#06b6d4", icon: "💻" },
-  { name: "Inversiones", type: TransactionType.INCOME, color: "#8b5cf6", icon: "📈" },
-  { name: "Otros ingresos", type: TransactionType.INCOME, color: "#f59e0b", icon: "💰" },
-  { name: "Alimentación", type: TransactionType.EXPENSE, color: "#ef4444", icon: "🍽️" },
-  { name: "Transporte", type: TransactionType.EXPENSE, color: "#f97316", icon: "🚗" },
-  { name: "Vivienda", type: TransactionType.EXPENSE, color: "#eab308", icon: "🏠" },
-  { name: "Salud", type: TransactionType.EXPENSE, color: "#ec4899", icon: "🏥" },
-  { name: "Educación", type: TransactionType.EXPENSE, color: "#6366f1", icon: "📚" },
-  { name: "Entretenimiento", type: TransactionType.EXPENSE, color: "#14b8a6", icon: "🎬" },
-  { name: "Servicios", type: TransactionType.EXPENSE, color: "#64748b", icon: "⚡" },
-  { name: "Otros gastos", type: TransactionType.EXPENSE, color: "#78716c", icon: "📦" },
+  { name: "Sueldo", type: "INCOME", color: "#10b981", icon: "💼" },
+  { name: "Freelance", type: "INCOME", color: "#06b6d4", icon: "💻" },
+  { name: "Inversiones", type: "INCOME", color: "#8b5cf6", icon: "📈" },
+  { name: "Otros ingresos", type: "INCOME", color: "#f59e0b", icon: "💰" },
+  { name: "Alimentación", type: "EXPENSE", color: "#ef4444", icon: "🍽️" },
+  { name: "Transporte", type: "EXPENSE", color: "#f97316", icon: "🚗" },
+  { name: "Vivienda", type: "EXPENSE", color: "#eab308", icon: "🏠" },
+  { name: "Salud", type: "EXPENSE", color: "#ec4899", icon: "🏥" },
+  { name: "Educación", type: "EXPENSE", color: "#6366f1", icon: "📚" },
+  { name: "Entretenimiento", type: "EXPENSE", color: "#14b8a6", icon: "🎬" },
+  { name: "Servicios", type: "EXPENSE", color: "#64748b", icon: "⚡" },
+  { name: "Otros gastos", type: "EXPENSE", color: "#78716c", icon: "📦" },
 ];
 
 export const authOptions: NextAuthOptions = {
