@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { TransactionList } from "@/components/TransactionList";
 import { TransactionForm } from "@/components/TransactionForm";
+import { TransactionDetail } from "@/components/TransactionDetail";
 
 interface Transaction {
   id: string;
@@ -11,6 +12,7 @@ interface Transaction {
   date: string;
   type: "INCOME" | "EXPENSE";
   category: { id: string; name: string; color: string; icon: string };
+  receiptItems?: { name: string; price: number }[] | null;
 }
 
 function currentMonth() {
@@ -26,6 +28,7 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [selected, setSelected] = useState<Transaction | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -101,10 +104,11 @@ export default function TransactionsPage() {
           {loading ? (
             <div className="text-center py-10 text-slate-400 dark:text-slate-500">Cargando...</div>
           ) : (
-            <TransactionList transactions={transactions} onDelete={handleDelete} />
+            <TransactionList transactions={transactions} onDelete={handleDelete} onSelect={setSelected} />
           )}
         </div>
       </main>
+      <TransactionDetail transaction={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

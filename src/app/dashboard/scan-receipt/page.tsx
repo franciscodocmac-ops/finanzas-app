@@ -25,6 +25,7 @@ function fmt(n: number) {
 export default function ScanReceiptPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState<Step>("upload");
   const [preview, setPreview] = useState<string | null>(null);
@@ -169,28 +170,42 @@ export default function ScanReceiptPage() {
             {/* Upload zone */}
             <div className="card p-6 mb-4">
               <h2 className="font-semibold text-slate-800 dark:text-slate-200 mb-3">📷 Foto de la boleta</h2>
-              <div
-                className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {preview ? (
+              {preview && (
+                <div className="mb-4">
                   <img src={preview} alt="Boleta" className="max-h-64 mx-auto rounded-lg object-contain" />
-                ) : (
-                  <div className="text-slate-400 dark:text-slate-500">
-                    <div className="text-4xl mb-2">🧾</div>
-                    <p className="text-sm">Toca para seleccionar foto</p>
-                    <p className="text-xs mt-1">JPG, PNG, HEIC</p>
-                  </div>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="btn-secondary flex-1"
+                >
+                  📷 Tomar foto
+                </button>
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="btn-secondary flex-1"
+                >
+                  🖼️ Elegir de biblioteca
+                </button>
               </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
               {preview && step === "upload" && (
                 <button
                   onClick={handleScan}

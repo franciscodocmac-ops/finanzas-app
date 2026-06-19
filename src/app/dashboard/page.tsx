@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { TransactionForm } from "@/components/TransactionForm";
 import { TransactionList } from "@/components/TransactionList";
 import { MonthlyChart } from "@/components/MonthlyChart";
+import { TransactionDetail } from "@/components/TransactionDetail";
 
 interface DashboardData {
   totalIncome: number;
@@ -21,6 +22,7 @@ interface Transaction {
   date: string;
   type: "INCOME" | "EXPENSE";
   category: { id: string; name: string; color: string; icon: string };
+  receiptItems?: { name: string; price: number }[] | null;
 }
 
 function fmt(n: number) {
@@ -38,6 +40,7 @@ export default function DashboardPage() {
   const [month, setMonth] = useState(currentMonth());
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Transaction | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -114,7 +117,7 @@ export default function DashboardPage() {
               </div>
               <div className="lg:col-span-2 card p-5">
                 <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Últimos movimientos</h3>
-                <TransactionList transactions={data.recentTransactions} onDelete={handleDelete} compact />
+                <TransactionList transactions={data.recentTransactions} onDelete={handleDelete} onSelect={setSelected} compact />
               </div>
             </div>
 
@@ -151,6 +154,7 @@ export default function DashboardPage() {
           </div>
         ) : null}
       </main>
+      <TransactionDetail transaction={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
